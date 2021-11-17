@@ -1,0 +1,96 @@
+# Spot API URL                              Spot Test Network URL
+# https://api.binance.com/api               https://testnet.binance.vision/api
+# wss://stream.binance.com:9443/ws          wss://testnet.binance.vision/ws
+# wss://stream.binance.com:9443/stream      wss://testnet.binance.vision/stream
+
+from binance.client import Client
+import cpl_testing_config
+
+client = Client(cpl_testing_config.test_api_key, cpl_testing_config.test_secret_key, tld='us')
+print("connected to the matrix")
+
+accountInfo = client.get_account()
+print(accountInfo)
+
+info = client.get_account()     # I NEED 3 PIECES OF INFORMATION FROM MY BINANCE ACCOUNT
+                                # AVAILABLE COIN (COIN THAT IS AVAILABLE FOR TRADE AND NOT 'LOCKED")
+                                # TOTAL COIN (FREE+LOCKED COIN)
+                                # COST BASIS (HOW MUCH I PAID FOR MY TOTAL COIN)
+
+                                # I DON'T NEED ANY REAL TIME MARKET DATA STREAMED.. NONE.
+                                # I REALLY ONLY NEED THE 3 VARIABLES BELOW IN ORDER TO EXECUTE MY BUY/SELL LOOP
+
+
+# NEED FUNCTION THAT ASKS USER FOR THE FOLLOWING INPUTS:
+coin_symbol =     # USER INPUT  (EXAMPLE, BTC.. BUT FORMATTED CORRECTLY FOR PROGRAM TO READ)
+starting_coin =   # USER INPUT  (EXAMPLE, .01 OR .03 OR 1 OR 5 ETC.)
+trade_interval =  # USER INPUT  (HOW OFTEN PROGRAM CHECKS TO SEE IF A SELL OR BUY WAS PROCESSED AND UPDATES ALL VARIABLES
+				     AND UPDATES ALL VARIABLES.  EXAMPLE, 1s, 1m, 5m, 15m ETC.)
+max_cost_basis =  # USER INPUT  (JUST A VARIABLE THAT TELL PROGRAM NOT TO PLACE BUY ORDER, EXAMPLE, $5000)
+
+available_coin =  # PULL FROM MY BINANCE ACCOUNT    (COIN THAT IS AVAILABLE FOR TRADE AND NOT 'LOCKED")
+total_coin =      # PULL FROM MY BINANCE ACCOUNT    (FREE+LOCKED COIN)
+cost_basis =      # PULL FROM MY BINANCE ACCOUNT    (HOW MUCH I PAID FOR MY TOTAL COIN)
+
+buy_quantity = total_coin * 2   # 2 IS A CONSTANT    |
+buy_price = cost_basis * .9     # .9 IS A CONSTANT   |  THESE VARIABLES ARE USED TO PLACE ALL BUY AND SELL ORDERS
+sell_quantity = available_coin  # YES, ALL OF IT.    |  AND NEED TO BE POPULATED DYNAMICALLY
+sell_price = cost_basis * 1.2   # 1.2 IS A CONSTANT  |
+
+
+# NEED FUNCTION HERE THAT REFRESHED VARIABLES POPULATED BY BINANCE: available_coin, total_coin, cost_basis
+# WOULD LIKE PRINT OF ALL VARIABLES CURRENT VALUES:
+#     coin_symbol = $VALUE           starting_coin = $VALUE        max_cost_basis = $VALUE
+#     available_coin = $VALUE        total_coin = $VALUE           cost_basis = $VALUE
+#     buy_quantity = $VALUE          buy_price = $VALUE
+#     sell_quantity = $VALUE         sell_price = $VALUE
+
+# INPUT ("START PURCHASE LOOP?  Y OR N?")  USER INPUT
+
+# IF YES, RUN FUCTION THAT REFRESHES ALL VARIABLES AGAIN WITHOUT A PRINT STATEMENT AND BEGIN PURCHASE LOOP
+
+# REFRESH BINANCE VARIABLES FUNCTION                                                             # LINE 51
+
+# PURCHASE LOOP:
+if total_coin = 0                          # if total_coin = 0, PLACE MARKET ORDER FOR
+    def buy():                             #      total_coin + starting_coin
+        order = client.create_order(
+        symbol='coin_symbol',
+        side=SIDE_BUY,
+        type=ORDER_TYPE_MARKET,
+        timeInForce=TIME_IN_FORCE_GTC,
+        price= total_coin + starting_coin
+)
+elif total_coin > 0 AND cost_basis < max_cost_basis  # elif total_coin > 0 AND cost_basis < max_cost_basis
+    def sell():                                      #     PLACE SELL LIMIT ORDER FOR sell_quantity AND sell_price
+        order = client.create_order(                 #     AND A BUY LIMIT ORDER FOR buy_quantity AND buy_price
+        symbol='coin_symbol',           #
+        side=SIDE_SELL,                 #
+        type=ORDER_TYPE_LIMIT,          #
+        timeInForce=TIME_IN_FORCE_GTC,  #
+        quantity='sell_quantity',       #      THERE SHOULD ALWAYS BE A SELL ORDER AND BUY ORDER PENDING
+        price='sell_price'              #      SIMULTANEOUSLY if total_coin > 0 AND cost_basis < max_cost_basis
+)                                       #
+    def buy():                          #
+        order = client.create_order(    #
+        symbol='coin_symbol',           #
+        side=SIDE_BUY,                  #
+        type=ORDER_TYPE_LIMIT,          #
+        timeInForce=TIME_IN_FORCE_GTC,  #
+        quantity='buy_quantity',        #
+        price='buy_price'               #
+)
+else total_coin > 0 AND cost_basis => max_cost_basis  # if total_coin is > 0 AND cost_basis => max_cost_basis
+    def sell():                                       #     PLACE SELL LIMIT ORDER FOR sell_quantity AND sell_price
+        order = client.create_order(                  #     (DO NOT PLACE BUY ORDER)
+        symbol='coin_symbol',
+        side=SIDE_SELL,
+        type=ORDER_TYPE_LIMIT,
+        timeInForce=TIME_IN_FORCE_GTC,
+        quantity='sell_quantity',
+        price='sell_price'
+)
+
+# NEXT FUNCTION EXECUTES WHEN ANY ORDER IS FILLED (BUY OR SELL)
+     # DELETES ALL PENDING ORDERS
+     # STARTS PROGRAM AGAIN FROM LINE 51
